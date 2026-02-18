@@ -18,10 +18,27 @@ export const signIn = async (email: string, password: string) => {
         email,
         password,
     });
+    
+    // Handle email not confirmed error
+    if (error?.message?.includes('Email not confirmed')) {
+        return { 
+            data, 
+            error: { message: 'Please check your email and confirm your account before signing in.' }
+        };
+    }
+    
     return { data, error };
 };
 
 export const signOut = async () => {
     const { error } = await supabase.auth.signOut();
     return { error };
+};
+
+export const resendConfirmationEmail = async (email: string) => {
+    const { data, error } = await supabase.auth.resend({
+        type: 'signup',
+        email,
+    });
+    return { data, error };
 };

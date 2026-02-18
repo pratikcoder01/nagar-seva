@@ -1,49 +1,126 @@
-import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-import { z } from "zod";
+import { NextRequest, NextResponse } from 'next/server';
+import { IssueService } from '@/lib/backend/issues';
+import { ApiResponse } from '@/lib/backend/types';
 
-const prisma = new PrismaClient();
+export async function GET(request: NextRequest) {
+  try {
+    // Get auth token from Authorization header
+    const authHeader = request.headers.get('authorization');
+    const token = authHeader?.replace('Bearer ', '');
 
-const issueSchema = z.object({
-    title: z.string(),
-    description: z.string(),
-    category: z.string(),
-    userId: z.string(), // In real app, get from session
-    latitude: z.number().optional().default(0),
-    longitude: z.number().optional().default(0),
-});
-
-export async function GET(req: Request) {
-    try {
-        const issues = await prisma.issue.findMany({
-            orderBy: { createdAt: "desc" },
-            include: { user: { select: { name: true } } },
-        });
-        return NextResponse.json(issues);
-    } catch (error) {
-        return NextResponse.json({ error: "Failed to fetch issues" }, { status: 500 });
+    if (!token) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: 'UNAUTHORIZED',
+            message: 'Authorization token required'
+          }
+        },
+        { status: 401 }
+      );
     }
+
+    // Get query parameters
+    const { searchParams } = new URL(request.url);
+    const filters = {
+      page: searchParams.get('page') ? parseInt(searchParams.get('page')!) : undefined,
+      limit: searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : undefined,
+      status: (searchParams.get('status') as any) || undefined,
+      category: searchParams.get('category') || undefined,
+      user_id: searchParams.get('user_id') || undefined
+    };
+
+    const result = await IssueService.getIssues(token, filters);
+
+    if (!result.success) {
+      return NextResponse.json(
+        {
+          error: result.error,
+          success: false
+        },
+        { 
+          status: result.error?.code === 'VALIDATION_ERROR' ? 400 : 
+                 result.error?.code === 'UNAUTHORIZED' ? 401 : 500
+        }
+      );
+    }
+
+    return NextResponse.json(result, { status: 200 });
+
+  } catch (error) {
+    console.error('Get issues API error:', error);
+    
+    return NextResponse.json(
+      {
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'An unexpected error occurred'
+        }
+      },
+      { status: 500 }
+    );
+  }
 }
 
-export async function POST(req: Request) {
-    try {
-        const body = await req.json();
-        const validatedData = issueSchema.parse(body);
+export async function POST(request: NextRequest) {
+  try {
+    // Get auth token from Authorization header
+    const authHeader = request.headers.get('authorization');
+    const token = authHeader?.replace('Bearer ', '');
 
-        const issue = await prisma.issue.create({
-            data: {
-                title: validatedData.title,
-                description: validatedData.description,
-                category: validatedData.category,
-                userId: validatedData.userId,
-                latitude: validatedData.latitude,
-                longitude: validatedData.longitude,
-                status: "REPORTED",
-            },
-        });
-
-        return NextResponse.json(issue);
-    } catch (error) {
-        return NextResponse.json({ error: "Failed to create issue" }, { status: 400 });
+    if (!token) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: 'UNAUTHORIZED',
+            message: 'Authorization token required'
+          }
+        },
+        { status: 401 }
+      );
     }
+
+    const body = await request.json();
+    
+    const result = await IssueService.createIssue(token, body);
+
+    if (!result.success) {
+      return NextResponse.json(
+        {
+          error: result.error,
+          success: false
+        },
+        { 
+          status: result.error?.code === 'VALIDATION_ERROR' ? 400 : 
+                 result.error?.code === 'UNAUTHORIZED' ? 401 : 500
+        }
+      );
+    }
+
+    return NextResponse.json(
+      {
+        success: true,
+        data: result.data,
+        message: 'Issue created successfully'
+      },
+      { status: 201 }
+    );
+
+  } catch (error) {
+    console.error('Create issue API error:', error);
+    
+    return NextResponse.json(
+      {
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'An unexpected error occurred'
+        }
+      },
+      { status: 500 }
+    );
+  }
 }

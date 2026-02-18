@@ -6,8 +6,8 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Loader2 } from "lucide-react";
-import { signIn } from "@/lib/auth";
+import { Loader2, Mail } from "lucide-react";
+import { signIn, resendConfirmationEmail } from "@/lib/auth";
 import { Input } from "@/ui/components/ui/input";
 import { Button } from "@/ui/components/ui/button";
 import { Label } from "@/ui/components/ui/label";
@@ -20,7 +20,9 @@ const formSchema = z.object({
 export default function LoginPage() {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
+    const [resending, setResending] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [email, setEmail] = useState("");
 
     const {
         register,
@@ -33,6 +35,7 @@ export default function LoginPage() {
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         setLoading(true);
         setError(null);
+        setEmail(values.email);
         try {
             const { error } = await signIn(values.email, values.password);
             if (error) {
@@ -45,6 +48,24 @@ export default function LoginPage() {
             setError("An unexpected error occurred");
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleResendConfirmation = async () => {
+        if (!email) return;
+        
+        setResending(true);
+        try {
+            const { error } = await resendConfirmationEmail(email);
+            if (error) {
+                setError(error.message);
+            } else {
+                setError("Confirmation email resent! Please check your inbox.");
+            }
+        } catch (e) {
+            setError("Failed to resend confirmation email");
+        } finally {
+            setResending(false);
         }
     };
 
@@ -68,7 +89,28 @@ export default function LoginPage() {
                         {errors.password && <p className="text-red-500 text-xs">{errors.password.message}</p>}
                     </div>
 
-                    {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+                    {error && (
+                        <div className="space-y-2">
+                            <p className="text-red-500 text-sm text-center">{error}</p>
+                            {error.includes('confirm your account') && (
+                                <Button 
+                                    type="button" 
+                                    variant="outline" 
+                                    size="sm" 
+                                    onClick={handleResendConfirmation}
+                                    disabled={resending}
+                                    className="w-full"
+                                >
+                                    {resending ? (
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    ) : (
+                                        <Mail className="mr-2 h-4 w-4" />
+                                    )}
+                                    Resend Confirmation Email
+                                </Button>
+                            )}
+                        </div>
+                    )}
 
                     <Button type="submit" className="w-full" disabled={loading}>
                         {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}

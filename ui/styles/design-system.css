@@ -1,0 +1,243 @@
+/* NAGAR-SEVA DESIGN SYSTEM */
+/* Google-level UI/UX for Civic Infrastructure */
+
+:root {
+  /* === CIVIC COLOR PALETTE === */
+  /* Primary: Trust Blue */
+  --civic-primary-50: #eff6ff;
+  --civic-primary-100: #dbeafe;
+  --civic-primary-200: #bfdbfe;
+  --civic-primary-300: #93c5fd;
+  --civic-primary-400: #60a5fa;
+  --civic-primary-500: #3b82f6;
+  --civic-primary-600: #2563eb;
+  --civic-primary-700: #1d4ed8;
+  --civic-primary-800: #1e40af;
+  --civic-primary-900: #1e3a8a;
+
+  /* Secondary: Government Green */
+  --civic-secondary-50: #f0fdf4;
+  --civic-secondary-100: #dcfce7;
+  --civic-secondary-200: #bbf7d0;
+  --civic-secondary-300: #86efac;
+  --civic-secondary-400: #4ade80;
+  --civic-secondary-500: #22c55e;
+  --civic-secondary-600: #16a34a;
+  --civic-secondary-700: #15803d;
+  --civic-secondary-800: #166534;
+  --civic-secondary-900: #14532d;
+
+  /* Status Colors */
+  --status-reported: #f59e0b;
+  --status-assigned: #3b82f6;
+  --status-progress: #8b5cf6;
+  --status-resolved: #22c55e;
+
+  /* Neutral System */
+  --neutral-50: #fafafa;
+  --neutral-100: #f5f5f5;
+  --neutral-200: #e5e5e5;
+  --neutral-300: #d4d4d4;
+  --neutral-400: #a3a3a3;
+  --neutral-500: #737373;
+  --neutral-600: #525252;
+  --neutral-700: #404040;
+  --neutral-800: #262626;
+  --neutral-900: #171717;
+
+  /* === TYPOGRAPHY SYSTEM === */
+  --font-primary: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --font-mono: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Source Code Pro', monospace;
+  
+  /* Type Scale - Perfect Fourth */
+  --text-xs: 0.75rem;    /* 12px */
+  --text-sm: 0.875rem;   /* 14px */
+  --text-base: 1rem;     /* 16px */
+  --text-lg: 1.125rem;   /* 18px */
+  --text-xl: 1.25rem;    /* 20px */
+  --text-2xl: 1.5rem;    /* 24px */
+  --text-3xl: 1.875rem;  /* 30px */
+  --text-4xl: 2.25rem;   /* 36px */
+
+  /* === SPACING SYSTEM === */
+  /* Based on 8px grid */
+  --space-1: 0.25rem;   /* 4px */
+  --space-2: 0.5rem;    /* 8px */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1rem;      /* 16px */
+  --space-5: 1.25rem;   /* 20px */
+  --space-6: 1.5rem;    /* 24px */
+  --space-8: 2rem;      /* 32px */
+  --space-12: 3rem;     /* 48px */
+  --space-16: 4rem;     /* 64px */
+
+  /* === BORDER RADIUS === */
+  --radius-sm: 0.375rem;  /* 6px */
+  --radius-md: 0.5rem;    /* 8px */
+  --radius-lg: 0.75rem;   /* 12px */
+  --radius-xl: 1rem;      /* 16px */
+  --radius-2xl: 1.5rem;   /* 24px */
+
+  /* === SHADOWS === */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+
+  /* === ANIMATION EASING === */
+  --ease-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --spring: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* === DARK MODE === */
+.dark {
+  --neutral-50: #171717;
+  --neutral-100: #262626;
+  --neutral-200: #404040;
+  --neutral-300: #525252;
+  --neutral-400: #737373;
+  --neutral-500: #a3a3a3;
+  --neutral-600: #d4d4d4;
+  --neutral-700: #e5e5e5;
+  --neutral-800: #f5f5f5;
+  --neutral-900: #fafafa;
+}
+
+/* === UTILITY CLASSES === */
+.civic-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+}
+
+.civic-grid {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(12, 1fr);
+}
+
+.civic-card {
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--neutral-200);
+  transition: all 0.2s var(--ease-out);
+}
+
+.civic-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.dark .civic-card {
+  background: var(--neutral-800);
+  border-color: var(--neutral-700);
+}
+
+/* === ACCESSIBILITY === */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* === FOCUS STATES === */
+.civic-focus {
+  outline: 2px solid var(--civic-primary-500);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+.civic-focus-visible {
+  outline: 2px solid var(--civic-primary-500);
+  outline-offset: 2px;
+}
+
+/* === STATUS INDICATORS === */
+.status-reported {
+  background: var(--status-reported);
+  color: white;
+}
+
+.status-assigned {
+  background: var(--status-assigned);
+  color: white;
+}
+
+.status-progress {
+  background: var(--status-progress);
+  color: white;
+}
+
+.status-resolved {
+  background: var(--status-resolved);
+  color: white;
+}
+
+/* === LOADING STATES === */
+.civic-skeleton {
+  background: linear-gradient(90deg, var(--neutral-200) 25%, var(--neutral-300) 50%, var(--neutral-200) 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* === INTERACTIVE ELEMENTS === */
+.civic-button {
+  background: var(--civic-primary-600);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-6);
+  font-family: var(--font-primary);
+  font-size: var(--text-base);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s var(--ease-out);
+  position: relative;
+  overflow: hidden;
+}
+
+.civic-button:hover {
+  background: var(--civic-primary-700);
+  transform: scale(1.02);
+}
+
+.civic-button:active {
+  transform: scale(0.98);
+}
+
+.civic-button:disabled {
+  background: var(--neutral-400);
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* === RESPONSIVE BREAKPOINTS === */
+@media (max-width: 640px) {
+  .civic-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .civic-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+@media (min-width: 1025px) {
+  .civic-grid {
+    grid-template-columns: repeat(12, 1fr);
+  }
+}
